@@ -44,4 +44,4 @@ You don’t have to ever use `eject`. The curated feature set is suitable for sm
 React.JS for the front end\
 Redux for the state management\
 Sagas for the side effects management\
-reselect for memoized Selectors\
+reselect for memoized Selectors
