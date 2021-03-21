@@ -42,6 +42,7 @@ You don’t have to ever use `eject`. The curated feature set is suitable for sm
 # What I used to make this app
 
 React.JS for the front end\
+Material UI for front end components\
 Redux for the state management\
 Sagas for the side effects management\
 reselect for memoized Selectors
