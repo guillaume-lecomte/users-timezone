@@ -16,8 +16,9 @@ REST API to manage users
 Web API will be accessible to : http://localhost:3001/api/
 
 # What I used to make this app
-Express for the node.js api/
-Multer middleware to manage file upload/
-MongoDB as database/
-Mongoose for mongodb object modeling in node.js/
+
+Express for the node.js api\
+Multer middleware to manage file upload\
+MongoDB as database\
+Mongoose for mongodb object modeling in node.js\
 Docker compose to run the nodejs api and database instance
