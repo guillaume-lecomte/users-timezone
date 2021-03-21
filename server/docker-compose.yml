@@ -1,0 +1,20 @@
+version: "3.8"
+services:
+  #NodeJs API
+  api:
+    container_name: node-app
+    restart: always
+    env_file: ./.env
+    build: .
+    ports:
+      - "3001:3001"
+    depends_on:
+      - database
+  # MongoDB
+  database:
+    container_name: mongo
+    image: mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./data:/data/db
