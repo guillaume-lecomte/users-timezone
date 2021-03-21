@@ -41,7 +41,7 @@ You don’t have to ever use `eject`. The curated feature set is suitable for sm
 
 # What I used to make this app
 
-React.JS for the front end
-Redux for the state management
-Sagas for the side effects management
-reselect for memoized Selectors
+React.JS for the front end\
+Redux for the state management\
+Sagas for the side effects management\
+reselect for memoized Selectors\
