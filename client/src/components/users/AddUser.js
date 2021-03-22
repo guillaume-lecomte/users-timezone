@@ -70,7 +70,9 @@ export default function AddUser() {
 
   const canAdd = () => {
     const { username, timeZone, picture } = user;
-    return username.trim() !== "" && timeZone.trim() !== "" && picture;
+    return (
+      username.trim() !== "" && timeZone && timeZone.trim() !== "" && picture
+    );
   };
 
   return (

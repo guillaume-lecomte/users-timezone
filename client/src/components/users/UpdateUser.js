@@ -76,7 +76,9 @@ export default function UpdateUser() {
 
   const canUpdate = () => {
     const { username, timeZone, picture } = user;
-    return username.trim() !== "" && timeZone.trim() !== "" && picture;
+    return (
+      username.trim() !== "" && timeZone && timeZone.trim() !== "" && picture
+    );
   };
   return (
     <div>
