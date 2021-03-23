@@ -1,7 +1,7 @@
 const express = require("express");
 const multer = require("multer");
 const { maxFileUploadSize } = require("./config");
-const { getBase64FromBuffer } = require("./utils");
+const { getBase64FromBuffer, isBase64Input } = require("./utils");
 const User = require("./user/model");
 const router = express.Router();
 
@@ -57,9 +57,15 @@ router.put("/users/:id", upload.single("picture"), async (req, res) => {
     if (!user) {
       res.sendStatus(404);
     }
+    const { picture, username, timeZone } = req.body;
 
-    const base64img = getBase64FromBuffer(req.file.buffer);
-    const { username, timeZone } = req.body;
+    let base64img = null;
+    if (picture && !req.file && isBase64Input(picture)) {
+      base64img = picture;
+    } else {
+      base64img = getBase64FromBuffer(req.file.buffer);
+    }
+
     user.username = username;
     user.picture = base64img;
     user.timeZone = timeZone;
