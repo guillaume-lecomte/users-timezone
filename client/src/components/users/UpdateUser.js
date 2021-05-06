@@ -57,16 +57,16 @@ export default function UpdateUser() {
   const handleAvatar = async ({ target }) => {
     let reader = new FileReader();
     let file = target.files[0];
-
-    reader.onloadend = () => {
-      setUser((prevState) => ({
-        ...prevState,
-        picture: file,
-        preview: reader.result,
-      }));
-    };
-
-    reader.readAsDataURL(file);
+    if (file) {
+      reader.onloadend = () => {
+        setUser((prevState) => ({
+          ...prevState,
+          picture: file,
+          preview: reader.result,
+        }));
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const handleSubmit = async () => {

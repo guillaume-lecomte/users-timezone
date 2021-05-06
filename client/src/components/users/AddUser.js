@@ -51,16 +51,17 @@ export default function AddUser() {
   const handleAvatar = ({ target }) => {
     let reader = new FileReader();
     let file = target.files[0];
+    if (file) {
+      reader.onloadend = () => {
+        setUser((prevState) => ({
+          ...prevState,
+          picture: file,
+          preview: reader.result,
+        }));
+      };
 
-    reader.onloadend = () => {
-      setUser((prevState) => ({
-        ...prevState,
-        picture: file,
-        preview: reader.result,
-      }));
-    };
-
-    reader.readAsDataURL(file);
+      reader.readAsDataURL(file);
+    }
   };
 
   const handleSubmit = async () => {
