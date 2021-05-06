@@ -111,6 +111,7 @@ export default function AddUser() {
             }}
             autoHighlight
             getOptionLabel={(option) => option}
+            getOptionSelected={(option, value) => option.name === value.name}
             renderOption={(option) => (
               <React.Fragment>
                 <span>{option}</span>
