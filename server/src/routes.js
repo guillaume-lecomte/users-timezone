@@ -5,6 +5,9 @@ const { getBase64FromBuffer, isBase64Input } = require("./utils");
 const User = require("./user/model");
 const router = express.Router();
 
+// MongoDB duplicate key error, raised by the unique index on username
+const isDuplicateKeyError = (error) => error && error.code === 11000;
+
 const upload = multer({
   limits: { fileSize: maxFileUploadSize },
   fileFilter(req, file, cb) {
@@ -20,22 +23,35 @@ router.get("/", (req, res) => {
 });
 
 router.get("/users", async (req, res) => {
-  const users = await User.find({});
-  res.send(users);
+  try {
+    const users = await User.find({});
+    res.send(users);
+  } catch (error) {
+    console.warn(error);
+    res.sendStatus(500);
+  }
 });
 
 router.get("/users/:id", async (req, res) => {
-  const user = await User.findOne({ _id: req.params.id });
-  if (!user) {
-    res.sendStatus(404);
-  }
+  try {
+    const user = await User.findOne({ _id: req.params.id });
+    if (!user) {
+      return res.sendStatus(404);
+    }
 
-  res.send(user);
+    res.send(user);
+  } catch (error) {
+    console.warn(error);
+    res.sendStatus(500);
+  }
 });
 
 router.post("/users", upload.single("picture"), async (req, res) => {
   try {
     const { username, timeZone } = req.body;
+    if (!req.file) {
+      return res.status(400).send({ message: "A picture is required." });
+    }
     const base64img = getBase64FromBuffer(req.file.buffer);
 
     const user = new User({
@@ -46,6 +62,9 @@ router.post("/users", upload.single("picture"), async (req, res) => {
     await user.save();
     res.send(user);
   } catch (error) {
+    if (isDuplicateKeyError(error)) {
+      return res.status(409).send({ message: "This username is already used." });
+    }
     console.warn(error);
     res.sendStatus(500);
   }
@@ -55,15 +74,17 @@ router.put("/users/:id", upload.single("picture"), async (req, res) => {
   try {
     const user = await User.findOne({ _id: req.params.id });
     if (!user) {
-      res.sendStatus(404);
+      return res.sendStatus(404);
     }
     const { picture, username, timeZone } = req.body;
 
-    let base64img = null;
-    if (picture && !req.file && isBase64Input(picture)) {
-      base64img = picture;
-    } else {
+    // A new file wins, then a base64 string sent back as is, otherwise the
+    // current picture is kept.
+    let base64img = user.picture;
+    if (req.file) {
       base64img = getBase64FromBuffer(req.file.buffer);
+    } else if (picture && isBase64Input(picture)) {
+      base64img = picture;
     }
 
     user.username = username;
@@ -73,6 +94,9 @@ router.put("/users/:id", upload.single("picture"), async (req, res) => {
     await user.save();
     res.send(user);
   } catch (error) {
+    if (isDuplicateKeyError(error)) {
+      return res.status(409).send({ message: "This username is already used." });
+    }
     console.warn(error);
     res.sendStatus(500);
   }
@@ -82,7 +106,7 @@ router.delete("/users/:id", async (req, res) => {
   try {
     const user = await User.findOne({ _id: req.params.id });
     if (!user) {
-      res.sendStatus(404);
+      return res.sendStatus(404);
     }
 
     await User.deleteOne(user);
