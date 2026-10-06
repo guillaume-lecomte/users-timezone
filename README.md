@@ -13,18 +13,17 @@ The client lists users and lets you create, edit and delete them. A timeline pag
 - **Client** ([`client/`](client)): React 17 on Create React App, Redux with Redux-Saga for the side effects ([`usersSaga.js`](client/src/sagas/usersSaga.js)), a `reselect` selector that computes each user's local time ([`userSelector.js`](client/src/selectors/userSelector.js)), `moment-timezone` for the conversion ([`timeZone.js`](client/src/utils/timeZone.js)), Material UI v4 for the components.
 - **Server** ([`server/`](server)): Express 4 with Mongoose 5, `multer` for the avatar upload with a size limit and a jpg/jpeg/png filter ([`routes.js`](server/src/routes.js)), a Dockerfile and a Compose file that starts the API and MongoDB ([`docker-compose.yml`](server/docker-compose.yml)).
 
-Setup notes for each part are in [`server/README.md`](server/README.md) and [`client/README.md`](client/README.md). In short, the server runs with `docker-compose up` in `server/` (API on port 3001), and the client runs with `yarn start` or `npm start` in `client/` (port 3000).
+Setup notes for each part are in [`server/README.md`](server/README.md) and [`client/README.md`](client/README.md). In short, the server runs with `docker-compose up` in `server/` after `cp .env.example .env` (API on port 3001), and the client runs with `yarn start` or `npm start` in `client/` (port 3000).
 
-These commands were not run when this README was written. The repository has no lockfile for either part, so the dependency versions are not pinned.
+Verified on 2026-10-06 with Node.js 22: `npm install` and `npm test` in `server/` (10 tests, on an in-memory fake of the user model). Not run: the server against a real MongoDB, `docker-compose up`, and anything in `client/`.
 
 ## Known issues
 
-- Three handlers in [`server/src/routes.js`](server/src/routes.js) call `res.sendStatus(404)` without returning, then keep going. `GET /users/:id` for an unknown id tries to answer twice, in an `async` handler with no `try/catch`.
 - Avatars are stored as base64 strings inside the user documents.
 - The local-time selector only recomputes when the user list changes, and it writes `localeTime` onto the objects held in the Redux state. Read from the code: the times on the timeline do not update on their own.
-- No automated tests.
-- No lockfile, and the dependencies are from 2021 (Create React App 4, Mongoose 5, Material UI v4). They were not audited.
-- [`server/.env`](server/.env) is committed. It holds only a connection string to the Compose service, a port and an upload size, no credentials.
+- No client tests.
+- A file with another extension than jpg, jpeg or png is refused by `multer` and the error is not turned into a clean response: Express answers `500` with its default HTML error page.
+- The lockfiles are git-ignored (`server/.gitignore`), so dependency versions are not pinned. The dependencies are from 2021 (Create React App 4, Mongoose 5, Material UI v4) and were not audited.
 
 ## License
 
